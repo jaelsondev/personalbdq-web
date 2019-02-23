@@ -6,6 +6,10 @@ import router from './routes'
 
 import App from './App.vue'
 
+// LOADING COMPONENT
+import Loading from './components/Utils/Loading'
+Vue.component('v-loading', Loading)
+
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 

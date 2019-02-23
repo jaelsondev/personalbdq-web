@@ -24,6 +24,7 @@
                 {{ textSuccess }}
                 </v-alert>
                 <add-course :dialogdetail.sync="dialog" v-on:close = "close('adicionado')" v-on:sucess="alertSucess = true" v-on:error="alertError = true"></add-course>
+                <edit-course :dialogdetail.sync="dialogEdit" :editedItem.sync="editedItem" v-on:close="close('alterado')" v-on:sucess="alertSucess = true" v-on:error="alertError = true"></edit-course>
                 <v-btn
                     color="primary"
                     fab
@@ -47,12 +48,12 @@
                 >
                     <template slot="items" slot-scope="props">
                     <td>{{ props.item.name }}</td>
-                    <td>{{ props.item.type | priceMask}}</td>
+                    <td>{{ props.item.type }}</td>
                     <td class="justify-center align-center layout px-0">
                         <div class="text-xs-center elevation-0">
                         <v-icon
-                            medium
-                            color="secondary"
+                            dark
+                            color="primary"
                             @click="editItem(props.item)"
                         >
                             edit
@@ -60,9 +61,9 @@
                         </div>
                         <div class="text-xs-center elevation-0">
                         <v-icon
-                            medium
-                            color="secondary"
-                            @click="deletePlan(props.item.id)"
+                            dark
+                            color="red"
+                            @click="deleteCourse(props.item._id)"
                         >
                             delete
                         </v-icon>
@@ -70,6 +71,7 @@
                     </td>
                     </template>
                     <template slot="no-data">
+                        <v-loading :show="showLoading" msg="Não há cursos cadastrados"/>
                     </template>
                 </v-data-table>
                 </v-card>
@@ -80,17 +82,20 @@
 </template>
 
 <script>
+import Course from '@/services/Course'
 import AddCourse from './AddCourse'
+import EditCourse from './EditCourse'
 
 export default {
     name: 'courses',
     components: {
-        AddCourse
+        AddCourse, EditCourse
     },
     data(){
         return {
             alertSucess: false,
             alertError: false,
+            loadingData: null,
             timeout: 3000,
             textError: null,
             textSuccess: null,
@@ -109,16 +114,35 @@ export default {
                 align: 'left',
                 sortable: false,
                 value: 'name'
+            },
+            {
+                text: 'Ações',
+                align: 'center',
+                sortable: false,
+                value: 'name'
             }
             ],
             courses: [],
+            showLoading: 'loading'
         }
     },
     mounted () {
         this.alertError = false
         this.alertSucess = false
     },
+    created () {
+        this.getCourses()
+        if(this.courses.length === 0){
+            this.showLoading = 'msg'
+        }
+    },
     methods: {
+        editItem (item) {
+            this.alertError = false
+            this.alertSucess = false
+            this.editedItem = Object.assign({}, item)
+            this.dialogEdit = true
+        },
         toggleDialog () {
             this.alertError = false
             this.alertSucess = false
@@ -129,8 +153,29 @@ export default {
             this.textSuccess = `Curso ${text} com sucesso!`
             this.dialogEdit = false
             this.dialog = false
+            this.getCourses()
+        },
+        async getCourses () {
+            const response = await Course.list()
+            this.courses = response.data
+        },
+        async deleteCourse (id) {
+            const response = await Course.deleteCourse(id)
+            console.log(response.data)
+            if (response.length > 0) {
+                this.textSuccess = `Curso excluido com sucesso!`
+                this.alertError = false
+                this.alertSucess = true
+                this.getCourses()
+            } else {
+                this.textError = `Erro ao excluir o curso..`
+                this.alertError = true
+                this.alertSucess = false
+                this.getCourses()
+            }
         }
-    }
+    },
+
 }
 </script>
 

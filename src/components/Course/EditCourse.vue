@@ -3,7 +3,7 @@
         <v-form ref="form" v-model="valid" lazy-validation>
             <v-card>
                 <v-card-title>
-                <span class="headline">Adicionar Curso</span>
+                <span class="headline">Editar Curso</span>
                 </v-card-title>
                 <v-card-text>
                 <v-container grid-list-md>
@@ -11,7 +11,7 @@
                       <v-flex xs12>
                           <v-text-field
                           label="Curso"
-                          v-model="course.name"
+                          v-model="editedItem.name"
                           :rules="nameRules"
                           ></v-text-field>
                       </v-flex>
@@ -19,7 +19,7 @@
                         <v-select
                         label="Tipo"
                         :items="items"
-                        v-model="course.type"
+                        v-model="editedItem.type"
                         :rules="typeRules"
                         ></v-select>
                       </v-flex>
@@ -29,7 +29,7 @@
                 <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" flat @click.native="toggleDialog()">Fechar</v-btn>
-                <v-btn color="blue darken-1" :disabled="!valid" flat @click="add">Salvar</v-btn>
+                <v-btn color="blue darken-1" :disabled="!valid" flat @click="update">Salvar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>
@@ -40,14 +40,10 @@
 import Course from '@/services/Course'
 
 export default {
-  props: ['dialogdetail'],
+  props: ['dialogdetail', 'editedItem'],
   data () {
     return {
       valid: false,
-      course: {
-        name: '',
-        type: ''
-      },
       nameRules: [
         v => !!v || 'Nome do Curso é Obrigatório'
       ],
@@ -63,10 +59,10 @@ export default {
     toggleDialog () {
       this.$emit('close')
     },
-    async add () {
+    async update () {
       if (this.$refs.form.validate()) {
         try {
-          await Course.createCourse(this.course)
+          await Course.editCourse(this.editedItem._id, this.editedItem)
           this.$refs.form.reset()
           this.clearFields()
           this.toggleDialog()
@@ -79,8 +75,8 @@ export default {
       }
     },
     clearFields () {
-      this.course.name = ''
-      this.course.type = ''
+      this.editedItem.name = ''
+      this.editedItem.type = ''
     }
   }
 }
