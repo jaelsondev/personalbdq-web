@@ -6,6 +6,7 @@ Vue.use(VueRouter)
 import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Course from '@/components/Course/Course'
+import Users from '@/components/User/Users'
 
 const router = new VueRouter({
     routes: [
@@ -20,6 +21,10 @@ const router = new VueRouter({
                 {
                     path: '/cursos',
                     component: Course
+                },
+                {
+                    path: '/usuarios',
+                    component: Users
                 }
             ]
         }
