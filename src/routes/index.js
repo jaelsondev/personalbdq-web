@@ -7,6 +7,7 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Course from '@/components/Course/Course'
 import Users from '@/components/User/Users'
+import Folder from '@/components/Folder/Folders'
 
 const router = new VueRouter({
     routes: [
@@ -25,6 +26,10 @@ const router = new VueRouter({
                 {
                     path: '/usuarios',
                     component: Users
+                },
+                {
+                    path: '/listas',
+                    component: Folder
                 }
             ]
         }
